@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova | Creative Studio</title>
+<style>
+  :root{
+    --primary:#6366f1;
+    --primary-dark:#4338ca;
+    --accent:#22d3ee;
+    --dark:#0f172a;
+    --light:#f8fafc;
+    --gray:#64748b;
+    --transition:0.3s ease;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color:var(--dark);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block;}
+  a{text-decoration:none;}
+  ul{list-style:none;}
+
+  .navbar{
+    position:fixed;
+    top:0;left:0;right:0;
+    width:100%;
+    padding:18px 5%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:1000;
+    background:transparent;
+    transition:background var(--transition), box-shadow var(--transition), padding var(--transition);
+  }
+  .navbar.scrolled{
+    background:rgba(255,255,255,0.85);
+    backdrop-filter:blur(10px);
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    padding:12px 5%;
+  }
+  .logo{
+    font-size:1.6rem;
+    font-weight:800;
+    color:var(--primary-dark);
+    letter-spacing:1px;
+  }
+  .logo span{color:var(--accent);}
+
+  .nav-links{
+    display:flex;
+    gap:2.2rem;
+  }
+  .nav-links a{
+    position:relative;
+    color:var(--dark);
+    font-weight:600;
+    font-size:0.95rem;
+    padding:6px 2px;
+    transition:color var(--transition);
+  }
+  .navbar:not(.scrolled) .nav-links a{
+    color:#fff;
+  }
+  .nav-links a::after{
+    content:'';
+    position:absolute;
+    left:0;bottom:-4px;
+    width:0%;
+    height:2px;
+    background:var(--accent);
+    transition:width var(--transition);
+  }
+  .nav-links a:hover{
+    color:var(--primary);
+  }
+  .navbar:not(.scrolled) .nav-links a:hover{
+    color:var(--accent);
+  }
+  .nav-links a:hover::after,
+  .nav-links a.active::after{
+    width:100%;
+  }
+  .nav-links a.active{
+    color:var(--primary);
+  }
+  .navbar:not(.scrolled) .nav-links a.active{
+    color:var(--accent);
+  }
+
+  .hamburger{
+    display:none;
+    flex-direction:column;
+    gap:5px;
+    cursor:pointer;
+    z-index:1001;
+  }
+  .hamburger .bar{
+    width:26px;
+    height:3px;
+    background:#fff;
+    border-radius:2px;
+    transition:all var(--transition);
+  }
+  .navbar.scrolled .hamburger .bar{
+    background:var(--dark);
+  }
+  .hamburger.active .bar:nth-child(1){transform:translateY(8px) rotate(45deg);}
+  .hamburger.active .bar:nth-child(2){opacity:0;}
+  .hamburger.active .bar:nth-child(3){transform:translateY(-8px) rotate(-45deg);}
+
+  section{
+    padding:100px 5%;
+  }
+  .section-title{
+    text-align:center;
+    font-size:2.4rem;
+    font-weight:800;
+    margin-bottom:0.6rem;
+    color:var(--dark);
+  }
+  .section-subtitle{
+    text-align:center;
+    color:var(--gray);
+    margin-bottom:3rem;
+    font-size:1rem;
+  }
+
+  #home{
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#fff;
+    background:linear-gradient(135deg, var(--primary-dark), var(--primary) 60%, var(--accent));
+    position:relative;
+    padding:0 5%;
+    overflow:hidden;
+  }
+  #home::before{
+    content:'';
+    position:absolute;
+    width:600px;height:600px;
+    background:rgba(255,255,255,0.08);
+    border-radius:50%;
+    top:-200px;right:-150px;
+  }
+  #home::after{
+    content:'';
+    position:absolute;
+    width:400px;height:400px;
+    background:rgba(255,255,255,0.06);
+    border-radius:50%;
+    bottom:-150px;left:-100px;
+  }
+  .hero-content{
+    position:relative;
+    z-index:2;
+    max-width:750px;
+    animation:fadeInUp 1s ease;
+  }
+  .hero-content h1{
+    font-size:3.4rem;
+    font-weight:800;
+    margin-bottom:1.2rem;
+    line-height:1.2;
+  }
+  .hero-content h1 span{
+    color:var(--accent);
+    -webkit-text-fill-color:var(--accent);
+  }
+  .hero-content p{
+    font-size:1.15rem;
+    margin-bottom:2.2rem;
+    color:rgba(255,255,255,0.9);
+  }
+  .btn{
+    display:inline-block;
+    padding:14px 36px;
+    background:var(--accent);
+    color:var(--dark);
+    font-weight:700;
+    border:none;
+    border-radius:50px;
+    cursor:pointer;
+    font-size:1rem;
+    transition:transform var(--transition), box-shadow var(--transition), background var(--transition);
+    box-shadow:0 8px 20px rgba(34,211,238,0.4);
+  }
+  .btn:hover{
+    transform:translateY(-4px) scale(1.03);
+    box-shadow:0 12px 28px rgba(34,211,238,0.55);
+    background:#67e8f9;
+  }
+  .btn-outline{
+    background:transparent;
+    border:2px solid #fff;
+    color:#fff;
+    margin-left:15px;
+    box-shadow:none;
+  }
+  .btn-outline:hover{
+    background:#fff;
+    color:var(--primary-dark);
+  }
+
+  @keyframes fadeInUp{
+    from{opacity:0; transform:translateY(40px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  #about{
+    background:var(--light);
+  }
+  .about-grid{
+    display:grid;
+    grid-template-columns:1fr 1.2fr;
+    gap:50px;
+    align-items:center;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .about-img{
+    width:100%;
+    height:380px;
+    border-radius:20px;
+    background:linear-gradient(135deg, var(--primary), var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+    font-size:4rem;
+    font-weight:900;
+    box-shadow:0 20px 40px rgba(99,102,241,0.25);
+    transition:transform var(--transition);
+  }
+  .about-img:hover{transform:scale(1.03) rotate(1deg);}
+  .about-text h3{
+    font-size:1.8rem;
+    margin-bottom:1rem;
+    color:var(--primary-dark);
+  }
+  .about-text p{
+    color:var(--gray);
+    margin-bottom:1rem;
+  }
+  .about-stats{
+    display:flex;
+    gap:2rem;
+    margin-top:1.5rem;
+  }
+  .stat h4{
+    font-size:2rem;
+    color:var(--primary);
+    font-weight:800;
+  }
+  .stat p{margin:0; font-size:0.9rem; color:var(--gray);}
+
+  #services{
+    background:#fff;
+  }
+  .services-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+    gap:30px;
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .service-card{
+    background:var(--light);
+    padding:2.5rem 2rem;
+    border-radius:16px;
+    text-align:center;
+    transition:transform var(--transition), box-shadow var(--transition), background var(--transition);
+    cursor:pointer;
+    border:1px solid #eef0f5;
+  }
+  .service-card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 20px 40px rgba(99,102,241,0.18);
+    background:#fff;
+  }
+  .service-icon{
+    width:65px;height:65px;
+    border-radius:16px;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 1.2rem;
+    color:#fff;
+    font-size:1.8rem;
+    transition:transform var(--transition);
+  }
+  .service-card:hover .service-icon{
+    transform:rotate(8deg) scale(1.1);
+  }
+  .service-card h3{
+    margin-bottom:0.6rem;
+    color:var(--dark);
+  }
+  .service-card p{
+    color:var(--gray);
+    font-size:0.95rem;
+  }
+
+  #portfolio{
+    background:var(--light);
+  }
+  .portfolio-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:25px;
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .portfolio-item{
+    position:relative;
+    height:240px;
+    border-radius:16px;
+    overflow:hidden;
+    background:linear-gradient(135deg, var(--primary-dark), var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+    font-size:1.3rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform var(--transition);
+  }
+  .portfolio-item::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(15,23,42,0.45);
+    opacity:0;
+    transition:opacity var(--transition);
+  }
+  .portfolio-item span{
+    position:relative;
+    z-index:2;
+    transform:translateY(20px);
+    opacity:0;
+    transition:all var(--transition);
+    text-align:center;
+    padding:0 1rem;
+  }
+  .portfolio-item:hover::before{opacity:1;}
+  .portfolio-item:hover span{
+    transform:translateY(0);
+    opacity:1;
+  }
+  .portfolio-item:hover{
+    transform:scale(1.03);
+  }
+
+  #contact{
+    background:#fff;
+  }
+  .contact-wrap{
+    display:grid;
+    grid-template-columns:1fr 1.3fr;
+    gap:50px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  .contact-info h3{
+    font-size:1.6rem;
+    margin-bottom:1rem;
+    color:var(--primary-dark);
+  }
+  .contact-info p{
+    color:var(--gray);
+    margin-bottom:1.5rem;
+  }
+  .contact-detail{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:1rem;
+    color:var(--dark);
+    font-weight:600;
+  }
+  .contact-detail .icon-box{
+    width:42px;height:42px;
+    border-radius:50%;
+    background:var(--light);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--primary);
+    font-weight:800;
+    flex-shrink:0;
+  }
+  .contact-form{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .form-row{
+    display:flex;
+    gap:18px;
+  }
+  .form-row > *{flex:1;}
+  .contact-form input,
+  .contact-form textarea{
+    width:100%;
+    padding:14px 16px;
+    border:1px solid #e2e8f0;
+    border-radius:10px;
+    font-size:0.95rem;
+    font-family:inherit;
+    transition:border var(--transition), box-shadow var(--transition);
+    resize:vertical;
+  }
+  .contact-form input:focus,
+  .contact-form textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(99,102,241,0.15);
+  }
+  .contact-form button{
+    align-self:flex-start;
+  }
+  .form-msg{
+    font-size:0.9rem;
+    color:var(--primary);
+    font-weight:600;
+    min-height:20px;
+  }
+
+  footer{
+    background:var(--dark);
+    color:#cbd5e1;
+    text-align:center;
+    padding:2rem 5%;
+    font-size:0.9rem;
+  }
+  footer span{color:var(--accent);font-weight:700;}
+
+  .scroll-top{
+    position:fixed;
+    bottom:28px;right:28px;
+    width:46px;height:46px;
+    border-radius:50%;
+    background:var(--primary);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.2rem;
+    cursor:pointer;
+    border:none;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(20px);
+    transition:all var(--transition);
+    box-shadow:0 8px 20px rgba(99,102,241,0.4);
+    z-index:999;
+  }
+  .scroll-top.show{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0);
+  }
+  .scroll-top:hover{
+    background:var(--primary-dark);
+    transform:translateY(-4px);
+  }
+
+
+  @media (max-width: 992px){
+    .about-grid, .contact-wrap{
+      grid-template-columns:1fr;
+    }
+    .about-img{height:280px;}
+  }
+
+  @media (max-width: 768px){
+    .hero-content h1{font-size:2.4rem;}
+    .hamburger{display:flex;}
+    .nav-links{
+      position:fixed;
+      top:0;
+      right:-100%;
+      height:100vh;
+      width:70%;
+      max-width:320px;
+      background:#fff;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:2.5rem;
+      box-shadow:-10px 0 30px rgba(0,0,0,0.1);
+      transition:right 0.4s ease;
+    }
+    .nav-links.active{
+      right:0;
+    }
+    .nav-links a,
+    .navbar:not(.scrolled) .nav-links a{
+      color:var(--dark);
+      font-size:1.1rem;
+    }
+    .form-row{flex-direction:column;}
+    section{padding:80px 5%;}
+  }
+
+  @media (max-width: 480px){
+    .hero-content h1{font-size:1.9rem;}
+    .hero-content p{font-size:1rem;}
+    .btn-outline{margin-left:0; margin-top:12px;}
+    .section-title{font-size:1.9rem;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <a href="#home" class="logo">Nova<span>.</span></a>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#home" class="nav-link">Home</a></li>
+    <li><a href="#about" class="nav-link">About</a></li>
+    <li><a href="#services" class="nav-link">Services</a></li>
+    <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
+    <li><a href="#contact" class="nav-link">Contact</a></li>
+  </ul>
+
+  <div class="hamburger" id="hamburger">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </div>
+</nav>
+
+
+<section id="home">
+  <div class="hero-content">
+    <h1>We Build Brands That <span>Inspire</span> & Grow</h1>
+    <p>Nova Studio crafts beautiful digital experiences — from stunning websites to powerful brand identities — helping startups and businesses stand out in a crowded world.</p>
+    <a href="#services" class="btn">Explore Services</a>
+    <a href="#contact" class="btn btn-outline">Get In Touch</a>
+  </div>
+</section>
+
+<section id="about">
+  <h2 class="section-title">About Us</h2>
+  <p class="section-subtitle">Who we are and what drives us</p>
+
+  <div class="about-grid">
+    <div class="about-img">NS</div>
+    <div class="about-text">
+      <h3>Crafting Digital Experiences Since 2016</h3>
+      <p>Nova Studio is a creative digital agency specializing in web design, branding, and product strategy. We combine design thinking with technical excellence to deliver products that users love.</p>
+      <p>Our team of designers, developers, and strategists works closely with every client to turn ideas into impactful digital solutions.</p>
+      <div class="about-stats">
+        <div class="stat">
+          <h4>120+</h4>
+          <p>Projects Done</p>
+        </div>
+        <div class="stat">
+          <h4>50+</h4>
+          <p>Happy Clients</p>
+        </div>
+        <div class="stat">
+          <h4>8</h4>
+          <p>Years Experience</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <h2 class="section-title">Our Services</h2>
+  <p class="section-subtitle">What we can do for you</p>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon"></div>
+      <h3>Web Development</h3>
+      <p>Custom, responsive websites and web apps built with modern technologies for performance and scalability.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"></div>
+      <h3>UI/UX Design</h3>
+      <p>User-centered design solutions that combine aesthetics with usability to create memorable experiences.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"></div>
+      <h3>Branding</h3>
+      <p>Complete brand identity packages including logos, style guides, and marketing materials.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"></div>
+      <h3>App Development</h3>
+      <p>Cross-platform mobile applications designed to deliver seamless experiences on any device.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"></div>
+      <h3>Digital Marketing</h3>
+      <p>SEO, social media, and content strategies that help your brand reach the right audience.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"></div>
+      <h3>Consulting</h3>
+      <p>Strategic guidance to help businesses make informed decisions about their digital products.</p>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <h2 class="section-title">Our Portfolio</h2>
+  <p class="section-subtitle">A glimpse into our recent work</p>
+
+  <div class="portfolio-grid">
+    <div class="portfolio-item"><span>E-commerce Platform</span></div>
+    <div class="portfolio-item"><span>Finance Dashboard</span></div>
+    <div class="portfolio-item"><span>Travel App UI</span></div>
+    <div class="portfolio-item"><span>Brand Identity – Aurora</span></div>
+    <div class="portfolio-item"><span>SaaS Landing Page</span></div>
+    <div class="portfolio-item"><span>Portfolio Website</span></div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2 class="section-title">Contact Us</h2>
+  <p class="section-subtitle">Let's start a conversation</p>
+
+  <div class="contact-wrap">
+    <div class="contact-info">
+      <h3>Get in touch</h3>
+      <p>Have a project in mind or just want to say hello? Fill out the form and our team will get back to you within 24 hours.</p>
+
+      <div class="contact-detail">
+        <div class="icon-box">📍</div>
+        <div>123 Creative Lane, Design City, India</div>
+      </div>
+      <div class="contact-detail">
+        <div class="icon-box">✉️</div>
+        <div>hello@novastudio.com</div>
+      </div>
+      <div class="contact-detail">
+        <div class="icon-box">📞</div>
+        <div>+91 98765 43210</div>
+      </div>
+    </div>
+
+    <form class="contact-form" id="contactForm">
+      <div class="form-row">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+      </div>
+      <input type="text" placeholder="Subject" required>
+      <textarea rows="5" placeholder="Your Message" required></textarea>
+      <button type="submit" class="btn">Send Message</button>
+      <p class="form-msg" id="formMsg"></p>
+    </form>
+  </div>
+</section>
+
+
+<footer>
+  <p>Nova Studio. All rights reserved. Built with <span></span> using HTML, CSS & JS.</p>
+</footer>
+
+
+<button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+<script>
+
+  const navbar = document.getElementById('navbar');
+  const scrollTopBtn = document.getElementById('scrollTop');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+
+
+    if (window.scrollY > 400) {
+      scrollTopBtn.classList.add('show');
+    } else {
+      scrollTopBtn.classList.remove('show');
+    }
+
+    highlightActiveSection();
+  });
+
+
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  const navLinkItems = document.querySelectorAll('.nav-link');
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+  });
+
+
+  navLinkItems.forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      navLinks.classList.remove('active');
+    });
+  });
+
+  const sections = document.querySelectorAll('section');
+
+  function highlightActiveSection() {
+    let current = '';
+    const scrollPos = window.scrollY + window.innerHeight / 3; 
+
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+
+      if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinkItems.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+
+  highlightActiveSection();
+
+  const contactForm = document.getElementById('contactForm');
+  const formMsg = document.getElementById('formMsg');
+
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault(); // prevent actual page reload
+    formMsg.textContent = "✅ Thanks! Your message has been sent successfully.";
+    contactForm.reset();
+
+
+    setTimeout(() => {
+      formMsg.textContent = '';
+    }, 4000);
+  });
+</script>
+
+</body>
+</html>
